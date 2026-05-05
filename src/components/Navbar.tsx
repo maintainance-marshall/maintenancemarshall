@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import logo from "@/assets/logo.jpg";
 
 const navLinks = [
   { label: "Services", href: "#services" },
@@ -17,12 +18,7 @@ export function Navbar() {
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         <a href="#" className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-primary rounded flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-sm">M</span>
-          </div>
-          <span className="font-bold text-lg tracking-tight text-foreground">
-            MAINTENANCE <span className="text-primary">MARSHALL</span>
-          </span>
+          <img src={logo} alt="Maintenance Marshall logo" className="h-10 w-auto" />
         </a>
 
         <div className="hidden md:flex items-center gap-8">
