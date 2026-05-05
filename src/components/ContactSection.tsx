@@ -1,8 +1,38 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Phone, Mail, MapPin, ArrowRight } from "lucide-react";
+import { Phone, Mail, MapPin, ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { submitContactForm } from "@/server/contact.functions";
 
 export function ContactSection() {
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    service: "",
+    message: "",
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.name || !formData.email || !formData.service || !formData.message || !formData.phone) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+    setLoading(true);
+    try {
+      await submitContactForm({ data: formData });
+      toast.success("Your request has been sent! We'll be in touch soon.");
+      setFormData({ name: "", phone: "", email: "", service: "", message: "" });
+    } catch {
+      toast.error("Something went wrong. Please call us directly.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <section id="contact" className="py-24">
       <div className="max-w-7xl mx-auto px-6">
@@ -22,11 +52,11 @@ export function ContactSection() {
             </p>
 
             <div className="mt-8 space-y-4">
-              <a href="tel:+27000000000" className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
+              <a href="tel:+27767816550" className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
                 <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center">
                   <Phone className="w-4 h-4 text-primary" />
                 </div>
-                <span className="text-sm">+27 (0) 00 000 0000</span>
+                <span className="text-sm">+27 76 781 6550</span>
               </a>
               <a href="mailto:info@maintenancemarshall.co.za" className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
                 <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center">
@@ -38,7 +68,7 @@ export function ContactSection() {
                 <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center">
                   <MapPin className="w-4 h-4 text-primary" />
                 </div>
-                <span className="text-sm">Gauteng, South Africa</span>
+                <span className="text-sm">Kempton Park, South Africa</span>
               </div>
             </div>
           </motion.div>
@@ -48,13 +78,15 @@ export function ContactSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="space-y-5"
-            onSubmit={(e) => e.preventDefault()}
+            onSubmit={handleSubmit}
           >
             <div className="grid sm:grid-cols-2 gap-5">
               <div>
                 <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2 block">Name</label>
                 <input
                   type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData((p) => ({ ...p, name: e.target.value }))}
                   className="w-full bg-card border border-border rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
                   placeholder="Your name"
                 />
@@ -63,6 +95,8 @@ export function ContactSection() {
                 <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2 block">Phone</label>
                 <input
                   type="tel"
+                  value={formData.phone}
+                  onChange={(e) => setFormData((p) => ({ ...p, phone: e.target.value }))}
                   className="w-full bg-card border border-border rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
                   placeholder="Your phone"
                 />
@@ -72,13 +106,19 @@ export function ContactSection() {
               <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2 block">Email</label>
               <input
                 type="email"
+                value={formData.email}
+                onChange={(e) => setFormData((p) => ({ ...p, email: e.target.value }))}
                 className="w-full bg-card border border-border rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
                 placeholder="your@email.com"
               />
             </div>
             <div>
               <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2 block">Service Needed</label>
-              <select className="w-full bg-card border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:outline-none focus:border-primary transition-colors">
+              <select
+                value={formData.service}
+                onChange={(e) => setFormData((p) => ({ ...p, service: e.target.value }))}
+                className="w-full bg-card border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:outline-none focus:border-primary transition-colors"
+              >
                 <option value="">Select a service</option>
                 <option>Electrical</option>
                 <option>Plumbing</option>
@@ -92,13 +132,15 @@ export function ContactSection() {
               <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2 block">Message</label>
               <textarea
                 rows={4}
+                value={formData.message}
+                onChange={(e) => setFormData((p) => ({ ...p, message: e.target.value }))}
                 className="w-full bg-card border border-border rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors resize-none"
                 placeholder="Describe your maintenance needs..."
               />
             </div>
-            <Button variant="hero" size="lg" className="w-full">
-              Send Request
-              <ArrowRight className="w-4 h-4" />
+            <Button variant="hero" size="lg" className="w-full" disabled={loading}>
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
+              {loading ? "Sending..." : "Send Request"}
             </Button>
           </motion.form>
         </div>

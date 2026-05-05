@@ -36,7 +36,7 @@ export function Navbar() {
             </a>
           ))}
           <Button variant="hero" size="sm" asChild>
-            <a href="tel:+27000000000">
+            <a href="tel:+27767816550">
               <Phone className="w-3.5 h-3.5" />
               Call Now
             </a>
@@ -72,7 +72,7 @@ export function Navbar() {
                 </a>
               ))}
               <Button variant="hero" size="sm" asChild>
-                <a href="tel:+27000000000">
+                <a href="tel:+27767816550">
                   <Phone className="w-3.5 h-3.5" />
                   Call Now
                 </a>

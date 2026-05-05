@@ -11,7 +11,7 @@ export function Footer() {
           </span>
         </div>
         <p className="text-xs text-muted-foreground">
-          © {new Date().getFullYear()} Maintenance Marshall. All rights reserved. Gauteng, South Africa.
+          © {new Date().getFullYear()} Maintenance Marshall. All rights reserved. Kempton Park, South Africa.
         </p>
       </div>
     </footer>
