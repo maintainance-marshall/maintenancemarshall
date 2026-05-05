@@ -22,11 +22,11 @@ export function ContactSection() {
             </p>
 
             <div className="mt-8 space-y-4">
-              <a href="tel:+27000000000" className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
+              <a href="tel:+27767816550" className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
                 <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center">
                   <Phone className="w-4 h-4 text-primary" />
                 </div>
-                <span className="text-sm">+27 (0) 00 000 0000</span>
+                <span className="text-sm">+27 76 781 6550</span>
               </a>
               <a href="mailto:info@maintenancemarshall.co.za" className="flex items-center gap-3 text-foreground hover:text-primary transition-colors">
                 <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center">
@@ -38,7 +38,7 @@ export function ContactSection() {
                 <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center">
                   <MapPin className="w-4 h-4 text-primary" />
                 </div>
-                <span className="text-sm">Gauteng, South Africa</span>
+                <span className="text-sm">Kempton Park, South Africa</span>
               </div>
             </div>
           </motion.div>
