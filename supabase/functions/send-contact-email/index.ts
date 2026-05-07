@@ -15,7 +15,10 @@ serve(async (req) => {
   }
 
   try {
-    const { to, subject, body } = await req.json();
+    const payload = await req.json();
+    console.log("Full request payload:", JSON.stringify(payload));
+    const { to, subject, body } = payload;
+    console.log("Parsed 'to' value:", JSON.stringify(to), "type:", typeof to);
 
     if (!to || !subject || !body) {
       return new Response(JSON.stringify({ error: "Missing required fields" }), {
