@@ -51,6 +51,7 @@ serve(async (req) => {
     });
 
     const result = await emailRes.json();
+    console.log("Resend API status:", emailRes.status, "response:", JSON.stringify(result));
 
     if (!emailRes.ok) {
       console.error("Resend error:", result);
