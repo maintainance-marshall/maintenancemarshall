@@ -41,7 +41,7 @@ serve(async (req) => {
       body: JSON.stringify({
         from: "Maintenance Marshall <quotes@mail.maintenancemarshall.co.za>",
         reply_to: "info@maintenancemarshall.co.za",
-        to: [to],
+        to: ['info@maintenancemarshall.co.za'],
         subject,
         text: body,
       }),
