@@ -6,9 +6,14 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-2">
           <img src={logo} alt="Maintenance Marshall logo" className="h-8 w-auto" />
-          <span className="text-sm font-semibold text-foreground">
-            MAINTENANCE MARSHALL <span className="text-muted-foreground font-normal">(Pty) Ltd</span>
-          </span>
+          <div className="flex flex-col">
+            <span className="text-sm font-semibold text-foreground">
+              Maintenance Marshall (Pty) Ltd
+            </span>
+            <span className="text-xs text-muted-foreground">
+              Reg No: 2026/349640/07
+            </span>
+          </div>
         </div>
         <p className="text-xs text-muted-foreground">
           © {new Date().getFullYear()} Maintenance Marshall. All rights reserved. Kempton Park, South Africa.
