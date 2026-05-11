@@ -33,13 +33,13 @@ export function HeroSection() {
             </span>
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-extrabold leading-[0.95] tracking-tight mb-6">
+          <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-extrabold leading-[0.9] tracking-tight mb-8">
             <span className="text-foreground">ONE CALL.</span>
             <br />
             <span className="text-gradient-amber">TOTAL RESOLUTION.</span>
           </h1>
 
-          <p className="text-lg text-muted-foreground max-w-lg mb-8 leading-relaxed">
+          <p className="text-xl md:text-2xl text-muted-foreground max-w-xl mb-12 leading-relaxed">
             Multi-skilled property maintenance and technical services across Gauteng. 
             If it can be fixed, installed, repaired, or restored — we handle it. 
             Correctly. Permanently.
