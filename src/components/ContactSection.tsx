@@ -7,6 +7,7 @@ import { submitContactForm } from "@/server/contact.functions";
 
 export function ContactSection() {
   const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -24,8 +25,9 @@ export function ContactSection() {
     setLoading(true);
     try {
       await submitContactForm({ data: formData });
-      toast.success("Your request has been sent! We'll be in touch soon.");
       setFormData({ name: "", phone: "", email: "", service: "", message: "" });
+      setSubmitted(true);
+      toast.success("Your request has been sent!");
     } catch {
       toast.error("Something went wrong. Please call us directly.");
     } finally {
