@@ -75,76 +75,95 @@ export function ContactSection() {
             </div>
           </motion.div>
 
-          <motion.form
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="space-y-5"
-            onSubmit={handleSubmit}
-          >
-            <div className="grid sm:grid-cols-2 gap-5">
+          {submitted ? (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-card border border-primary/30 rounded-xl p-8 flex flex-col items-center text-center"
+            >
+              <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-5">
+                <CheckCircle2 className="w-8 h-8 text-primary" />
+              </div>
+              <h3 className="text-2xl font-bold text-foreground mb-3">Request Received</h3>
+              <p className="text-muted-foreground leading-relaxed mb-6 max-w-md">
+                Thank you for contacting Maintenance Marshall. Your quote request has been received successfully. Our team will contact you shortly.
+              </p>
+              <Button variant="heroOutline" size="lg" onClick={() => setSubmitted(false)}>
+                Send Another Request
+              </Button>
+            </motion.div>
+          ) : (
+            <motion.form
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="space-y-5"
+              onSubmit={handleSubmit}
+            >
+              <div className="grid sm:grid-cols-2 gap-5">
+                <div>
+                  <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2 block">Name</label>
+                  <input
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) => setFormData((p) => ({ ...p, name: e.target.value }))}
+                    className="w-full bg-card border border-border rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
+                    placeholder="Your name"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2 block">Phone</label>
+                  <input
+                    type="tel"
+                    value={formData.phone}
+                    onChange={(e) => setFormData((p) => ({ ...p, phone: e.target.value }))}
+                    className="w-full bg-card border border-border rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
+                    placeholder="Your phone"
+                  />
+                </div>
+              </div>
               <div>
-                <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2 block">Name</label>
+                <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2 block">Email</label>
                 <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData((p) => ({ ...p, name: e.target.value }))}
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData((p) => ({ ...p, email: e.target.value }))}
                   className="w-full bg-card border border-border rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
-                  placeholder="Your name"
+                  placeholder="your@email.com"
                 />
               </div>
               <div>
-                <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2 block">Phone</label>
-                <input
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => setFormData((p) => ({ ...p, phone: e.target.value }))}
-                  className="w-full bg-card border border-border rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
-                  placeholder="Your phone"
+                <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2 block">Service Needed</label>
+                <select
+                  value={formData.service}
+                  onChange={(e) => setFormData((p) => ({ ...p, service: e.target.value }))}
+                  className="w-full bg-card border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:outline-none focus:border-primary transition-colors"
+                >
+                  <option value="">Select a service</option>
+                  <option>Electrical</option>
+                  <option>Plumbing</option>
+                  <option>Water Systems</option>
+                  <option>Property Maintenance</option>
+                  <option>Security & Automation</option>
+                  <option>Multiple Services</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2 block">Message</label>
+                <textarea
+                  rows={4}
+                  value={formData.message}
+                  onChange={(e) => setFormData((p) => ({ ...p, message: e.target.value }))}
+                  className="w-full bg-card border border-border rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors resize-none"
+                  placeholder="Describe your maintenance needs..."
                 />
               </div>
-            </div>
-            <div>
-              <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2 block">Email</label>
-              <input
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData((p) => ({ ...p, email: e.target.value }))}
-                className="w-full bg-card border border-border rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
-                placeholder="your@email.com"
-              />
-            </div>
-            <div>
-              <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2 block">Service Needed</label>
-              <select
-                value={formData.service}
-                onChange={(e) => setFormData((p) => ({ ...p, service: e.target.value }))}
-                className="w-full bg-card border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:outline-none focus:border-primary transition-colors"
-              >
-                <option value="">Select a service</option>
-                <option>Electrical</option>
-                <option>Plumbing</option>
-                <option>Water Systems</option>
-                <option>Property Maintenance</option>
-                <option>Security & Automation</option>
-                <option>Multiple Services</option>
-              </select>
-            </div>
-            <div>
-              <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2 block">Message</label>
-              <textarea
-                rows={4}
-                value={formData.message}
-                onChange={(e) => setFormData((p) => ({ ...p, message: e.target.value }))}
-                className="w-full bg-card border border-border rounded-lg px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors resize-none"
-                placeholder="Describe your maintenance needs..."
-              />
-            </div>
-            <Button variant="hero" size="lg" className="w-full" disabled={loading}>
-              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
-              {loading ? "Sending..." : "Send Request"}
-            </Button>
-          </motion.form>
+              <Button variant="hero" size="lg" className="w-full" disabled={loading}>
+                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
+                {loading ? "Sending..." : "Send Request"}
+              </Button>
+            </motion.form>
+          )}
         </div>
       </div>
     </section>
