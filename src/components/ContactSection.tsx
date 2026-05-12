@@ -88,8 +88,8 @@ export function ContactSection() {
               <p className="text-muted-foreground leading-relaxed mb-6 max-w-md">
                 Thank you for contacting Maintenance Marshall. Your quote request has been received successfully. Our team will contact you shortly.
               </p>
-              <Button variant="heroOutline" size="lg" onClick={() => setSubmitted(false)}>
-                Send Another Request
+              <Button variant="heroOutline" size="lg" onClick={() => { setSubmitted(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
+                Back to Home
               </Button>
             </motion.div>
           ) : (
