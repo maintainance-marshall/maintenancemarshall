@@ -36,7 +36,7 @@ export function HeroSection() {
           <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold leading-[0.9] tracking-tight mb-8">
             <span className="text-foreground">MAINTENANCE MARSHALL</span>
             <br />
-            <span className="text-gradient-amber">(PTY) LTD</span>
+            <span className="text-gradient-amber text-3xl sm:text-4xl md:text-5xl lg:text-6xl align-middle">(PTY) LTD</span>
           </h1>
 
           <p className="text-xl md:text-2xl text-muted-foreground max-w-xl mb-12 leading-relaxed">
