@@ -102,8 +102,9 @@ export function ContactSection() {
             >
               <div className="grid sm:grid-cols-2 gap-5">
                 <div>
-                  <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2 block">Name</label>
+                  <label htmlFor="contact-name" className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2 block">Name</label>
                   <input
+                    id="contact-name"
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData((p) => ({ ...p, name: e.target.value }))}
@@ -112,8 +113,9 @@ export function ContactSection() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2 block">Phone</label>
+                  <label htmlFor="contact-phone" className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2 block">Phone</label>
                   <input
+                    id="contact-phone"
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData((p) => ({ ...p, phone: e.target.value }))}
@@ -123,8 +125,9 @@ export function ContactSection() {
                 </div>
               </div>
               <div>
-                <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2 block">Email</label>
+                <label htmlFor="contact-email" className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2 block">Email</label>
                 <input
+                  id="contact-email"
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData((p) => ({ ...p, email: e.target.value }))}
@@ -133,8 +136,9 @@ export function ContactSection() {
                 />
               </div>
               <div>
-                <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2 block">Service Needed</label>
+                <label htmlFor="contact-service" className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2 block">Service Needed</label>
                 <select
+                  id="contact-service"
                   value={formData.service}
                   onChange={(e) => setFormData((p) => ({ ...p, service: e.target.value }))}
                   className="w-full bg-card border border-border rounded-lg px-4 py-3 text-sm text-foreground focus:outline-none focus:border-primary transition-colors"
@@ -149,8 +153,9 @@ export function ContactSection() {
                 </select>
               </div>
               <div>
-                <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2 block">Message</label>
+                <label htmlFor="contact-message" className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2 block">Message</label>
                 <textarea
+                  id="contact-message"
                   rows={4}
                   value={formData.message}
                   onChange={(e) => setFormData((p) => ({ ...p, message: e.target.value }))}
