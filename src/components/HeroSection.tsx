@@ -13,6 +13,8 @@ export function HeroSection() {
           alt="Professional maintenance technician"
           width={1920}
           height={1080}
+          fetchPriority="high"
+          decoding="async"
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-background/85" />
@@ -37,6 +39,7 @@ export function HeroSection() {
             <span className="text-foreground">MAINTENANCE MARSHALL</span>
             <br />
             <span className="text-gradient-amber text-3xl sm:text-4xl md:text-5xl lg:text-6xl align-middle">(PTY) LTD</span>
+            <span className="sr-only"> — Property Maintenance & Technical Services in Gauteng</span>
           </h1>
 
           <p className="text-xl md:text-2xl text-muted-foreground max-w-xl mb-12 leading-relaxed">
