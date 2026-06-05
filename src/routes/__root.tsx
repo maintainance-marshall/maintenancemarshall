@@ -29,6 +29,7 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "google-site-verification", content: "9ptdX6MHhpK25xbIHLMeVG7iSoMbLHXTVYynNZcH3zs" },
       { title: "Maintenance Marshall — Property Maintenance Gauteng" },
       { name: "description", content: "Maintenance Marshall provides multi-skilled property maintenance and technical services across Gauteng — electrical, plumbing, water systems, security & more." },
       { name: "author", content: "Maintenance Marshall" },
