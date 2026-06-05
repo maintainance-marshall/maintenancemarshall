@@ -14,7 +14,7 @@ export const Route = createFileRoute("/")({
       { title: "Maintenance Marshall | Property Maintenance Gauteng" },
       { name: "description", content: "Multi-skilled property maintenance and technical services in Gauteng. Electrical, plumbing, water systems, security & more. One call. Total resolution." },
       { property: "og:title", content: "Maintenance Marshall | Property Maintenance Gauteng" },
-      { property: "og:description", content: "Precision-driven property maintenance across Gauteng. 60% Black-owned. B-BBEE Level 2 targeting." },
+      { property: "og:description", content: "Precision-driven property maintenance across Gauteng. 60% Black-owned. B-BBEE Level 2 compliant." },
       { property: "og:url", content: "https://maintenancemarshall.lovable.app/" },
     ],
     links: [
