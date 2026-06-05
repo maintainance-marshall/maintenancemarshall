@@ -64,7 +64,7 @@ export function HeroSection() {
             {[
               { value: "60%", label: "Black-Owned" },
               { value: "5+", label: "Service Disciplines" },
-              { value: "B-BBEE", label: "Level 2 Targeting" },
+              { value: "B-BBEE", label: "Level 2 Compliant" },
             ].map((stat) => (
               <div key={stat.label}>
                 <div className="text-2xl font-bold text-primary">{stat.value}</div>
