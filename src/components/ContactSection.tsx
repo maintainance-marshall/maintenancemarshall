@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Phone, Mail, MapPin, ArrowRight, Loader2, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { submitContactForm } from "@/server/contact.functions";
+import { submitContactForm } from "@/lib/contact.functions";
 
 export function ContactSection() {
   const [loading, setLoading] = useState(false);
