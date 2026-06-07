@@ -16,9 +16,7 @@ serve(async (req) => {
 
   try {
     const payload = await req.json();
-    console.log("Full request payload:", JSON.stringify(payload));
     const { to, subject, body } = payload;
-    console.log("Parsed 'to' value:", JSON.stringify(to), "type:", typeof to);
 
     if (!to || !subject || !body) {
       return new Response(JSON.stringify({ error: "Missing required fields" }), {
@@ -35,6 +33,8 @@ serve(async (req) => {
       });
     }
 
+    const recipients = Array.isArray(to) ? to : [to];
+
     const emailRes = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -44,18 +44,17 @@ serve(async (req) => {
       body: JSON.stringify({
         from: "Maintenance Marshall <quotes@maintenancemarshall.co.za>",
         reply_to: "quotes@maintenancemarshall.co.za",
-        to: ['quotes@maintenancemarshall.co.za'],
+        to: recipients,
         subject,
         text: body,
       }),
     });
 
     const result = await emailRes.json();
-    console.log("Resend API status:", emailRes.status, "response:", JSON.stringify(result));
+    console.log("Resend status:", emailRes.status, "to:", JSON.stringify(recipients), "response:", JSON.stringify(result));
 
     if (!emailRes.ok) {
-      console.error("Resend error:", result);
-      return new Response(JSON.stringify({ error: "Failed to send email" }), {
+      return new Response(JSON.stringify({ error: "Failed to send email", details: result }), {
         status: 500,
         headers: { "Content-Type": "application/json" },
       });
