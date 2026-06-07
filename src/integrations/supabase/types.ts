@@ -16,31 +16,55 @@ export type Database = {
     Tables: {
       contact_submissions: {
         Row: {
+          attachment_urls: string[] | null
           created_at: string
+          description: string | null
           email: string
           id: string
-          message: string
+          job_type: string | null
+          message: string | null
+          multiple_services: string[] | null
           name: string
+          other_service: string | null
           phone: string
+          preferred_contact: string | null
+          property_address: string | null
           service: string
+          urgency: string | null
         }
         Insert: {
+          attachment_urls?: string[] | null
           created_at?: string
+          description?: string | null
           email: string
           id?: string
-          message: string
+          job_type?: string | null
+          message?: string | null
+          multiple_services?: string[] | null
           name: string
+          other_service?: string | null
           phone: string
+          preferred_contact?: string | null
+          property_address?: string | null
           service: string
+          urgency?: string | null
         }
         Update: {
+          attachment_urls?: string[] | null
           created_at?: string
+          description?: string | null
           email?: string
           id?: string
-          message?: string
+          job_type?: string | null
+          message?: string | null
+          multiple_services?: string[] | null
           name?: string
+          other_service?: string | null
           phone?: string
+          preferred_contact?: string | null
+          property_address?: string | null
           service?: string
+          urgency?: string | null
         }
         Relationships: []
       }
