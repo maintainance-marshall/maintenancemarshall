@@ -58,7 +58,7 @@ export const submitContactForm = createServerFn({ method: "POST" })
         "Content-Type": "application/json",
         Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
       },
-      body: JSON.stringify({ to: "info@maintenancemarshall.co.za", subject, body }),
+      body: JSON.stringify({ to: "quotes@maintenancemarshall.co.za", subject, body }),
     });
 
     if (!emailRes.ok) {
