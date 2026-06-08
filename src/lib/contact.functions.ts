@@ -1,10 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
+import { getRequestHeader } from "@tanstack/react-start/server";
 import { z } from "zod";
 
 const fileSchema = z.object({
   name: z.string().min(1).max(255),
   type: z.string().min(1).max(200),
-  base64: z.string().min(1).max(15 * 1024 * 1024), // ~10MB
+  base64: z.string().min(1).max(15 * 1024 * 1024),
 });
 
 const contactSchema = z.object({
@@ -22,6 +23,47 @@ const contactSchema = z.object({
   files: z.array(fileSchema).max(10).optional().default([]),
 });
 
+// Server-side magic-byte sniffing. Returns canonical MIME or null when unknown.
+function sniffMime(bytes: Uint8Array): string | null {
+  if (bytes.length < 4) return null;
+  // JPEG: FF D8 FF
+  if (bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) return "image/jpeg";
+  // PNG: 89 50 4E 47
+  if (bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47) return "image/png";
+  // PDF: 25 50 44 46
+  if (bytes[0] === 0x25 && bytes[1] === 0x50 && bytes[2] === 0x44 && bytes[3] === 0x46) return "application/pdf";
+  // ZIP-based (DOCX): PK\x03\x04
+  if (bytes[0] === 0x50 && bytes[1] === 0x4b && bytes[2] === 0x03 && bytes[3] === 0x04) {
+    return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+  }
+  // Legacy DOC (OLE compound): D0 CF 11 E0 A1 B1 1A E1
+  if (
+    bytes.length >= 8 &&
+    bytes[0] === 0xd0 && bytes[1] === 0xcf && bytes[2] === 0x11 && bytes[3] === 0xe0 &&
+    bytes[4] === 0xa1 && bytes[5] === 0xb1 && bytes[6] === 0x1a && bytes[7] === 0xe1
+  ) {
+    return "application/msword";
+  }
+  return null;
+}
+
+const ALLOWED_MIME = new Set([
+  "image/jpeg",
+  "image/png",
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+]);
+
+const MAX_BYTES = 10 * 1024 * 1024; // 10MB
+const RATE_LIMIT_WINDOW_MIN = 10;
+const RATE_LIMIT_MAX = 3; // max 3 submissions per IP per window
+
+async function sha256Hex(input: string): Promise<string> {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(input));
+  return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
 export const submitContactForm = createServerFn({ method: "POST" })
   .inputValidator((data) => contactSchema.parse(data))
   .handler(async ({ data }) => {
@@ -37,17 +79,48 @@ export const submitContactForm = createServerFn({ method: "POST" })
       { auth: { persistSession: false, autoRefreshToken: false } }
     );
 
-    // Upload files to private storage bucket, generate signed URLs (7-day expiry)
+    // ---- Rate limit by client IP (hashed) ----
+    const fwd = getRequestHeader("x-forwarded-for") || "";
+    const realIp = getRequestHeader("x-real-ip") || getRequestHeader("cf-connecting-ip") || "";
+    const ip = (fwd.split(",")[0] || realIp || "unknown").trim();
+    const ipHash = await sha256Hex(ip + "|" + (process.env.SUPABASE_SERVICE_ROLE_KEY ?? ""));
+    const since = new Date(Date.now() - RATE_LIMIT_WINDOW_MIN * 60 * 1000).toISOString();
+    const { count } = await supabase
+      .from("contact_submission_rate_limits")
+      .select("id", { count: "exact", head: true })
+      .eq("ip_hash", ipHash)
+      .gte("created_at", since);
+    if ((count ?? 0) >= RATE_LIMIT_MAX) {
+      throw new Error("Too many requests. Please try again later or call us directly.");
+    }
+    await supabase.from("contact_submission_rate_limits").insert({ ip_hash: ipHash });
+
+    // ---- Server-side validate + upload files under submissions/ prefix ----
     const attachmentUrls: string[] = [];
     const attachmentList: { name: string; url: string }[] = [];
 
     for (const f of files) {
-      const buffer = Uint8Array.from(atob(f.base64), (c) => c.charCodeAt(0));
-      const safeName = f.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-      const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${safeName}`;
+      let buffer: Uint8Array;
+      try {
+        buffer = Uint8Array.from(atob(f.base64), (c) => c.charCodeAt(0));
+      } catch {
+        console.warn("Skipping file with invalid base64:", f.name);
+        continue;
+      }
+      if (buffer.byteLength === 0 || buffer.byteLength > MAX_BYTES) {
+        console.warn("Skipping file outside size limits:", f.name, buffer.byteLength);
+        continue;
+      }
+      const sniffed = sniffMime(buffer);
+      if (!sniffed || !ALLOWED_MIME.has(sniffed)) {
+        console.warn("Skipping file with disallowed/unverifiable content type:", f.name);
+        continue;
+      }
+      const safeName = f.name.replace(/[^a-zA-Z0-9._-]/g, "_").slice(0, 120);
+      const path = `submissions/${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${safeName}`;
       const { error: upErr } = await supabase.storage
         .from("quote-attachments")
-        .upload(path, buffer, { contentType: f.type, upsert: false });
+        .upload(path, buffer, { contentType: sniffed, upsert: false });
       if (upErr) {
         console.error("Upload failed:", upErr);
         continue;
@@ -74,7 +147,7 @@ export const submitContactForm = createServerFn({ method: "POST" })
       preferred_contact: preferredContact,
       urgency,
       attachment_urls: attachmentUrls.length ? attachmentUrls : null,
-      message: description, // backward-compat
+      message: description,
     });
 
     if (error) {
