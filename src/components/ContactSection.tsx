@@ -36,6 +36,8 @@ export function ContactSection() {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
+  const [website, setWebsite] = useState(""); // honeypot — must stay empty
+  const [mountedAt] = useState<number>(() => Date.now());
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
