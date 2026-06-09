@@ -21,6 +21,8 @@ const contactSchema = z.object({
   preferredContact: z.string().min(1).max(50),
   urgency: z.string().min(1).max(50),
   files: z.array(fileSchema).max(10).optional().default([]),
+  website: z.string().max(200).optional().default(""),
+  elapsedMs: z.number().int().min(0).max(24 * 60 * 60 * 1000).optional().default(0),
 });
 
 // Server-side magic-byte sniffing. Returns canonical MIME or null when unknown.
