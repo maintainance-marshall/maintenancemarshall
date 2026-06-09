@@ -312,6 +312,19 @@ export function ContactSection() {
                 )}
               </div>
 
+              {/* Honeypot field — hidden from real users, visible to naive bots */}
+              <div aria-hidden="true" className="absolute left-[-10000px] top-auto w-px h-px overflow-hidden" style={{ position: "absolute" }}>
+                <label htmlFor="q-website">Website (leave blank)</label>
+                <input
+                  id="q-website"
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={website}
+                  onChange={(e) => setWebsite(e.target.value)}
+                />
+              </div>
+
               <Button variant="hero" size="lg" className="w-full" disabled={loading}>
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
                 {loading ? "Sending..." : "Send Quote Request"}
