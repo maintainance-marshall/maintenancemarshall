@@ -21,6 +21,8 @@ const contactSchema = z.object({
   preferredContact: z.string().min(1).max(50),
   urgency: z.string().min(1).max(50),
   files: z.array(fileSchema).max(10).optional().default([]),
+  website: z.string().max(200).optional().default(""),
+  elapsedMs: z.number().int().min(0).max(24 * 60 * 60 * 1000).optional().default(0),
 });
 
 // Server-side magic-byte sniffing. Returns canonical MIME or null when unknown.
@@ -70,7 +72,17 @@ export const submitContactForm = createServerFn({ method: "POST" })
     const {
       name, phone, email, service, jobType, multipleServices, otherService,
       propertyAddress, description, preferredContact, urgency, files,
+      website, elapsedMs,
     } = data;
+
+    // ---- Bot detection: honeypot + minimum fill time ----
+    if (website && website.trim() !== "") {
+      // Honeypot tripped — return generic success-shaped error
+      throw new Error("Submission blocked.");
+    }
+    if (elapsedMs > 0 && elapsedMs < 3000) {
+      throw new Error("Submission rejected: form completed too quickly.");
+    }
 
     const { createClient } = await import("@supabase/supabase-js");
     const supabase = createClient(
