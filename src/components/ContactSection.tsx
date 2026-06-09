@@ -121,6 +121,18 @@ export function ContactSection() {
       return;
     }
 
+    // Bot-detection guards (also enforced server-side)
+    if (website.trim() !== "") {
+      // Honeypot tripped — silently succeed-looking but do nothing
+      toast.error("Submission blocked. Please refresh and try again.");
+      return;
+    }
+    const elapsedMs = Date.now() - mountedAt;
+    if (elapsedMs < 3000) {
+      toast.error("Please take a moment to review your details before submitting.");
+      return;
+    }
+
     setLoading(true);
     try {
       const encoded = await Promise.all(
@@ -130,18 +142,22 @@ export function ContactSection() {
           base64: await fileToBase64(f),
         })),
       );
-      await submitContactForm({ data: { ...formData, files: encoded } });
+      await submitContactForm({
+        data: { ...formData, files: encoded, website, elapsedMs },
+      });
       setFormData({
         name: "", phone: "", email: "", service: "", jobType: "",
         multipleServices: [], otherService: "", propertyAddress: "",
         description: "", preferredContact: "", urgency: "",
       });
       setFiles([]);
+      setWebsite("");
       setSubmitted(true);
       toast.success("Your quote request has been sent!");
     } catch (err) {
       console.error(err);
-      toast.error("Something went wrong. Please call us directly.");
+      const msg = err instanceof Error ? err.message : "Something went wrong. Please call us directly.";
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
