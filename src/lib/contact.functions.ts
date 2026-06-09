@@ -72,7 +72,17 @@ export const submitContactForm = createServerFn({ method: "POST" })
     const {
       name, phone, email, service, jobType, multipleServices, otherService,
       propertyAddress, description, preferredContact, urgency, files,
+      website, elapsedMs,
     } = data;
+
+    // ---- Bot detection: honeypot + minimum fill time ----
+    if (website && website.trim() !== "") {
+      // Honeypot tripped — return generic success-shaped error
+      throw new Error("Submission blocked.");
+    }
+    if (elapsedMs > 0 && elapsedMs < 3000) {
+      throw new Error("Submission rejected: form completed too quickly.");
+    }
 
     const { createClient } = await import("@supabase/supabase-js");
     const supabase = createClient(
