@@ -1,4 +1,4 @@
-# Deploying Maintenance Marshall to Cloudflare Workers 
+# Deploying Maintenance Marshall to Cloudflare Workers.
 
 A beginner-friendly, step-by-step guide to taking this project off Lovable and hosting it yourself on Cloudflare Workers at `maintenancemarshall.co.za`.
 
