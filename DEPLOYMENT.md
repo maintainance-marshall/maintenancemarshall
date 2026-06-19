@@ -2,7 +2,7 @@
 
 A beginner-friendly, step-by-step guide to taking this project off Lovable and hosting it yourself on Cloudflare Workers at `maintenancemarshall.co.za`
 
-> **Read this first.** Work through the sections in order. Don't skip ahead — later steps depend on values you collect earlier. Plan ~2 hours for the first deploy. Most of that is waiting for DNS
+> **Read this first.** Work through the sections in order. Don't skip ahead — later steps depend on values you collect earlier. Plan ~2 hours for the first deploy. Most of that is waiting for DNS.
 
 ---
 
