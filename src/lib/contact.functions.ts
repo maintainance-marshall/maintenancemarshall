@@ -66,6 +66,26 @@ async function sha256Hex(input: string): Promise<string> {
   return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
+// Get RESEND_API_KEY from Worker context
+// In Cloudflare Workers, secrets are not available via process.env.
+// They're injected into the Worker's environment and accessible via getRequestHeader
+// or they may be available via process.env in some configurations.
+function getResendApiKey(): string {
+  // Try to get from process.env first (works in local dev and some Worker configs)
+  const fromEnv = process.env.RESEND_API_KEY;
+  if (fromEnv) return fromEnv;
+  
+  // Try to get from request header (Worker context injection)
+  try {
+    const fromHeader = getRequestHeader("x-resend-api-key");
+    if (fromHeader) return fromHeader;
+  } catch {
+    // getRequestHeader might not be available in all contexts
+  }
+  
+  throw new Error("RESEND_API_KEY not available in Worker context or environment");
+}
+
 export const submitContactForm = createServerFn({ method: "POST" })
   .inputValidator((data) => contactSchema.parse(data))
   .handler(async ({ data }) => {
@@ -88,7 +108,7 @@ export const submitContactForm = createServerFn({ method: "POST" })
     const fwd = getRequestHeader("x-forwarded-for") || "";
     const realIp = getRequestHeader("x-real-ip") || getRequestHeader("cf-connecting-ip") || "";
     const ip = (fwd.split(",")[0] || realIp || "unknown").trim();
-    const ipHash = await sha256Hex(ip + "|" + (process.env.RESEND_API_KEY ?? ""));
+    const ipHash = await sha256Hex(ip + "|mm-quote-form");
     
     // Simple in-memory rate limiting (in production, consider using KV or similar)
     // This is a simplified approach - for production, use persistent storage
@@ -193,9 +213,12 @@ export const submitContactForm = createServerFn({ method: "POST" })
     ].filter(Boolean).join("\n");
 
     const sendEmailViaResend = async (to: string, subject: string, body: string, attachmentsList?: typeof attachments) => {
-      const resendApiKey = process.env.RESEND_API_KEY;
-      if (!resendApiKey) {
-        throw new Error("RESEND_API_KEY not configured");
+      let resendApiKey: string;
+      try {
+        resendApiKey = getResendApiKey();
+      } catch (err) {
+        console.error("Failed to retrieve RESEND_API_KEY:", err);
+        throw new Error("Email service not configured");
       }
 
       const emailPayload: Record<string, unknown> = {
@@ -214,22 +237,44 @@ export const submitContactForm = createServerFn({ method: "POST" })
         }));
       }
 
-      const response = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${resendApiKey}`,
-        },
-        body: JSON.stringify(emailPayload),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.text();
-        console.error(`Failed to send email to ${to}:`, errorData);
-        throw new Error(`Email delivery failed: ${response.status}`);
+      let response: Response;
+      try {
+        response = await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${resendApiKey}`,
+          },
+          body: JSON.stringify(emailPayload),
+        });
+      } catch (fetchErr) {
+        console.error(`Fetch error sending email to ${to}:`, fetchErr);
+        throw new Error(`Network error contacting Resend API: ${String(fetchErr)}`);
       }
 
-      return response.json();
+      // Always read response body to get error details
+      let responseBody: string;
+      try {
+        responseBody = await response.text();
+      } catch (textErr) {
+        console.error(`Failed to read response body:`, textErr);
+        responseBody = "(unable to read response)";
+      }
+
+      if (!response.ok) {
+        console.error(
+          `Resend API error for ${to}: status=${response.status}, response=${responseBody}`
+        );
+        throw new Error(`Email delivery failed: ${response.status} - ${responseBody}`);
+      }
+
+      // Try to parse as JSON for success response
+      try {
+        return JSON.parse(responseBody);
+      } catch {
+        console.warn(`Resend response was not JSON: ${responseBody}`);
+        return { success: true };
+      }
     };
 
     try {
