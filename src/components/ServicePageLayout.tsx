@@ -5,6 +5,13 @@ import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { servicePages, type ServicePage } from "@/content/services";
 
+const trustPoints = [
+  "Clear scope of work before the job starts",
+  "Practical sequencing across connected trades",
+  "Neat workmanship with attention to preparation",
+  "Residential and commercial maintenance support",
+];
+
 export function ServicePageLayout({ service }: { service: ServicePage }) {
   const serviceHighlights = service.services.slice(0, 4);
   const relatedServices = servicePages
@@ -80,6 +87,28 @@ export function ServicePageLayout({ service }: { service: ServicePage }) {
         </section>
 
         <section className="py-20 bg-secondary">
+          <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-[0.9fr_1.1fr] gap-12 items-start">
+            <div>
+              <span className="text-xs uppercase tracking-[0.3em] text-primary font-semibold">Why Clients Choose Us</span>
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-3">
+                Maintenance planned around the full repair sequence
+              </h2>
+              <p className="text-muted-foreground mt-4 leading-relaxed">
+                Many property problems are connected. A leak can affect ceilings and paintwork, a drain issue can affect paving, and poor preparation can shorten the life of a repair. Maintenance Marshall looks at the full sequence so the work is planned clearly and completed in the correct order.
+              </p>
+            </div>
+            <div className="grid sm:grid-cols-2 gap-4">
+              {trustPoints.map((point) => (
+                <div key={point} className="rounded-lg border border-border bg-card p-5">
+                  <CheckCircle2 className="w-5 h-5 text-primary" />
+                  <h3 className="font-bold text-foreground mt-4">{point}</h3>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="py-20">
           <div className="max-w-7xl mx-auto px-6">
             <div className="max-w-2xl">
               <span className="text-xs uppercase tracking-[0.3em] text-primary font-semibold">Our Process</span>
@@ -98,7 +127,7 @@ export function ServicePageLayout({ service }: { service: ServicePage }) {
           </div>
         </section>
 
-        <section className="py-20">
+        <section className="py-20 bg-secondary">
           <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-[0.8fr_1.2fr] gap-12">
             <div>
               <span className="text-xs uppercase tracking-[0.3em] text-primary font-semibold">Questions</span>
@@ -120,7 +149,7 @@ export function ServicePageLayout({ service }: { service: ServicePage }) {
           </div>
         </section>
 
-        <section className="py-20 bg-secondary">
+        <section className="py-20">
           <div className="max-w-7xl mx-auto px-6">
             <div className="max-w-2xl">
               <span className="text-xs uppercase tracking-[0.3em] text-primary font-semibold">Related Services</span>
@@ -149,7 +178,7 @@ export function ServicePageLayout({ service }: { service: ServicePage }) {
           </div>
         </section>
 
-        <section className="py-20">
+        <section className="py-20 bg-secondary">
           <div className="max-w-7xl mx-auto px-6 rounded-xl border border-border bg-card p-8 md:p-10">
             <div className="grid lg:grid-cols-[1fr_auto] gap-8 items-center">
               <div>
