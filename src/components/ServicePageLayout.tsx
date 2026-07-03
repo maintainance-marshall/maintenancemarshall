@@ -3,10 +3,13 @@ import { ArrowLeft, CheckCircle2, Phone } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import type { ServicePage } from "@/content/services";
+import { servicePages, type ServicePage } from "@/content/services";
 
 export function ServicePageLayout({ service }: { service: ServicePage }) {
-  const relatedServices = service.services.slice(0, 4);
+  const serviceHighlights = service.services.slice(0, 4);
+  const relatedServices = servicePages
+    .filter((item) => item.slug !== service.slug)
+    .slice(0, 4);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -15,12 +18,11 @@ export function ServicePageLayout({ service }: { service: ServicePage }) {
         <section className="pt-32 pb-20 bg-secondary">
           <div className="max-w-7xl mx-auto px-6">
             <Link
-              to="/"
-              hash="services"
+              to="/services"
               className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-8"
             >
               <ArrowLeft className="w-4 h-4" />
-              Back to services
+              Back to all services
             </Link>
             <div className="max-w-3xl">
               <span className="text-xs uppercase tracking-[0.3em] text-primary font-semibold">
@@ -34,7 +36,7 @@ export function ServicePageLayout({ service }: { service: ServicePage }) {
               </p>
               <div className="mt-8 flex flex-col sm:flex-row gap-4">
                 <Button variant="hero" size="lg" asChild>
-                  <a href="tel:+27767816550">
+                  <a href="tel:+27767816550" aria-label="Call Maintenance Marshall on 076 781 6550">
                     <Phone className="w-4 h-4" />
                     Call 076 781 6550
                   </a>
@@ -119,6 +121,35 @@ export function ServicePageLayout({ service }: { service: ServicePage }) {
         </section>
 
         <section className="py-20 bg-secondary">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="max-w-2xl">
+              <span className="text-xs uppercase tracking-[0.3em] text-primary font-semibold">Related Services</span>
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground mt-3">
+                Other Maintenance Services
+              </h2>
+              <p className="text-muted-foreground mt-4">
+                Many property problems connect across more than one trade. These related services help clients find the full repair sequence.
+              </p>
+            </div>
+            <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {relatedServices.map((relatedService) => (
+                <Link
+                  key={relatedService.slug}
+                  to="/services/$serviceSlug"
+                  params={{ serviceSlug: relatedService.slug }}
+                  className="rounded-lg border border-border bg-card p-5 hover:border-primary transition-colors"
+                >
+                  <h3 className="font-bold text-foreground">{relatedService.shortTitle}</h3>
+                  <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+                    {relatedService.heroDescription}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="py-20">
           <div className="max-w-7xl mx-auto px-6 rounded-xl border border-border bg-card p-8 md:p-10">
             <div className="grid lg:grid-cols-[1fr_auto] gap-8 items-center">
               <div>
@@ -127,7 +158,7 @@ export function ServicePageLayout({ service }: { service: ServicePage }) {
                   Send Maintenance Marshall the details, photos and location of the work needed. We will help you turn the problem into a practical scope of work.
                 </p>
                 <div className="mt-5 flex flex-wrap gap-2">
-                  {relatedServices.map((item) => (
+                  {serviceHighlights.map((item) => (
                     <span key={item} className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">
                       {item}
                     </span>
