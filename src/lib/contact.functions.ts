@@ -68,25 +68,21 @@ async function sha256Hex(input: string): Promise<string> {
   return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-// Get RESEND_API_KEY from Worker context
-// In Cloudflare Workers, secrets are not available via process.env.
-// They're injected into the Worker's environment and accessible via getRequestHeader
-// or they may be available via process.env in some configurations.
+// RESEND_API_KEY must be set as a Cloudflare Worker secret:
+//   wrangler secret put RESEND_API_KEY --name maintenancemarshall
+// With `nodejs_compat` enabled in wrangler.jsonc, Worker secrets are exposed
+// on process.env at runtime. Read inside the handler (not at module scope) —
+// env is injected per-request on Cloudflare.
 function getResendApiKey(): string {
-  // Try to get from process.env first (works in local dev and some Worker configs)
-  const fromEnv = process.env.RESEND_API_KEY;
-  if (fromEnv) return fromEnv;
-  
-  // Try to get from request header (Worker context injection)
-  try {
-    const fromHeader = getRequestHeader("x-resend-api-key");
-    if (fromHeader) return fromHeader;
-  } catch {
-    // getRequestHeader might not be available in all contexts
+  const key = process.env.RESEND_API_KEY;
+  if (!key || key.trim() === "") {
+    throw new Error(
+      "RESEND_API_KEY is not configured on the Cloudflare Worker. Run: wrangler secret put RESEND_API_KEY",
+    );
   }
-  
-  throw new Error("RESEND_API_KEY not available in Worker context or environment");
+  return key;
 }
+
 
 export const submitContactForm = createServerFn({ method: "POST" })
   .inputValidator((data) => contactSchema.parse(data))
