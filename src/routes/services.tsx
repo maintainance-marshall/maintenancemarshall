@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { ContactSection } from "@/components/ContactSection";
-import { servicePages } from "@/lib/service-pages";
+import { servicePages } from "@/content/services";
 
 const SITE_URL = "https://www.maintenancemarshall.co.za";
 
@@ -22,6 +22,7 @@ export const Route = createFileRoute("/services")({
         content:
           "Multi-skilled property maintenance services across Gauteng for homes, offices, shops, landlords and commercial properties.",
       },
+      { property: "og:type", content: "website" },
       { property: "og:url", content: `${SITE_URL}/services` },
     ],
     links: [{ rel: "canonical", href: `${SITE_URL}/services` }],
@@ -51,10 +52,10 @@ function ServicesOverview() {
             {servicePages.map((service) => (
               <article key={service.slug} className="bg-card border border-border rounded-lg p-6">
                 <h2 className="text-xl font-bold mb-3">{service.title}</h2>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-5">{service.description}</p>
-                <a href={`/services/${service.slug}`} className="text-primary text-sm font-semibold">
+                <p className="text-sm text-muted-foreground leading-relaxed mb-5">{service.metaDescription}</p>
+                <Link to="/services/$serviceSlug" params={{ serviceSlug: service.slug }} className="text-primary text-sm font-semibold">
                   View service
-                </a>
+                </Link>
               </article>
             ))}
           </div>
