@@ -40,6 +40,7 @@ export const Route = createFileRoute("/services/$serviceSlug")({
       "@type": "Service",
       name: service.title,
       description: service.metaDescription,
+      url: canonical,
       provider: {
         "@type": "LocalBusiness",
         name: "Maintenance Marshall (Pty) Ltd",
@@ -70,6 +71,31 @@ export const Route = createFileRoute("/services/$serviceSlug")({
       },
     };
 
+    const breadcrumbSchema = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: SITE_URL,
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Services",
+          item: `${SITE_URL}/services`,
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: service.title,
+          item: canonical,
+        },
+      ],
+    };
+
     return {
       meta: [
         { title: service.metaTitle },
@@ -90,6 +116,10 @@ export const Route = createFileRoute("/services/$serviceSlug")({
         {
           type: "application/ld+json",
           children: JSON.stringify(faqSchema),
+        },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(breadcrumbSchema),
         },
       ],
     };
