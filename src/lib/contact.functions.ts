@@ -282,8 +282,12 @@ export const submitContactForm = createServerFn({ method: "POST" })
       ]);
     } catch (emailError) {
       console.error("Email sending error:", emailError);
-      throw new Error("Failed to send confirmation emails. Please try again.");
+      const detail = emailError instanceof Error ? emailError.message : String(emailError);
+      // Surface the real cause so the browser console / toast shows what failed
+      // (missing RESEND_API_KEY, Resend 401/403, unverified sender domain, etc.)
+      throw new Error(`Email delivery failed: ${detail}`);
     }
+
 
     return { success: true };
   });
