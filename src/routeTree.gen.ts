@@ -9,10 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LocationsLocationSlugRouteImport } from './routes/locations/$locationSlug'
 import { Route as ServicesServiceSlugRouteImport } from './routes/services/$serviceSlug'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as LocationsRouteImport } from './routes/locations'
+import { Route as ServicesRouteImport } from './routes/services'
 import { Route as IndexRouteImport } from './routes/index'
 
+const LocationsLocationSlugRoute = LocationsLocationSlugRouteImport.update({
+  id: '/locations/$locationSlug',
+  path: '/locations/$locationSlug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ServicesServiceSlugRoute = ServicesServiceSlugRouteImport.update({
   id: '/services/$serviceSlug',
   path: '/services/$serviceSlug',
@@ -23,6 +31,16 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LocationsRoute = LocationsRouteImport.update({
+  id: '/locations',
+  path: '/locations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicesRoute = ServicesRouteImport.update({
+  id: '/services',
+  path: '/services',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -31,36 +49,55 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/locations': typeof LocationsRoute
+  '/locations/$locationSlug': typeof LocationsLocationSlugRoute
+  '/services': typeof ServicesRoute
   '/services/$serviceSlug': typeof ServicesServiceSlugRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/locations': typeof LocationsRoute
+  '/locations/$locationSlug': typeof LocationsLocationSlugRoute
+  '/services': typeof ServicesRoute
   '/services/$serviceSlug': typeof ServicesServiceSlugRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/locations': typeof LocationsRoute
+  '/locations/$locationSlug': typeof LocationsLocationSlugRoute
+  '/services': typeof ServicesRoute
   '/services/$serviceSlug': typeof ServicesServiceSlugRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/services/$serviceSlug' | '/sitemap.xml'
+  fullPaths: '/' | '/locations' | '/locations/$locationSlug' | '/services' | '/services/$serviceSlug' | '/sitemap.xml'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/services/$serviceSlug' | '/sitemap.xml'
-  id: '__root__' | '/' | '/services/$serviceSlug' | '/sitemap.xml'
+  to: '/' | '/locations' | '/locations/$locationSlug' | '/services' | '/services/$serviceSlug' | '/sitemap.xml'
+  id: '__root__' | '/' | '/locations' | '/locations/$locationSlug' | '/services' | '/services/$serviceSlug' | '/sitemap.xml'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  LocationsRoute: typeof LocationsRoute
+  LocationsLocationSlugRoute: typeof LocationsLocationSlugRoute
+  ServicesRoute: typeof ServicesRoute
   ServicesServiceSlugRoute: typeof ServicesServiceSlugRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/locations/$locationSlug': {
+      id: '/locations/$locationSlug'
+      path: '/locations/$locationSlug'
+      fullPath: '/locations/$locationSlug'
+      preLoaderRoute: typeof LocationsLocationSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/services/$serviceSlug': {
       id: '/services/$serviceSlug'
       path: '/services/$serviceSlug'
@@ -75,6 +112,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/locations': {
+      id: '/locations'
+      path: '/locations'
+      fullPath: '/locations'
+      preLoaderRoute: typeof LocationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/services': {
+      id: '/services'
+      path: '/services'
+      fullPath: '/services'
+      preLoaderRoute: typeof ServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -87,6 +138,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  LocationsRoute: LocationsRoute,
+  LocationsLocationSlugRoute: LocationsLocationSlugRoute,
+  ServicesRoute: ServicesRoute,
   ServicesServiceSlugRoute: ServicesServiceSlugRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
 }
