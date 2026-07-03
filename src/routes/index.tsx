@@ -7,19 +7,27 @@ import { AboutSection } from "@/components/AboutSection";
 import { ContactSection } from "@/components/ContactSection";
 import { Footer } from "@/components/Footer";
 
+const SITE_URL = "https://www.maintenancemarshall.co.za";
+
 export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
     meta: [
       { title: "Maintenance Marshall | Property Maintenance Gauteng" },
-      { name: "description", content: "Multi-skilled property maintenance and technical services in Gauteng. Electrical, plumbing, water systems, security & more. One call. Total resolution." },
+      {
+        name: "description",
+        content:
+          "Multi-skilled property maintenance and technical services in Gauteng. Electrical, plumbing, water systems, security, waterproofing, ceilings and general maintenance. One call. Total resolution.",
+      },
       { property: "og:title", content: "Maintenance Marshall | Property Maintenance Gauteng" },
-      { property: "og:description", content: "Precision-driven property maintenance across Gauteng. 60% Black-owned. B-BBEE Level 2 compliant." },
-      { property: "og:url", content: "https://maintenancemarshall.lovable.app/" },
+      {
+        property: "og:description",
+        content:
+          "Precision-driven property maintenance across Gauteng. Electrical, plumbing, water systems, security, waterproofing, ceilings and general maintenance.",
+      },
+      { property: "og:url", content: `${SITE_URL}/` },
     ],
-    links: [
-      { rel: "canonical", href: "https://maintenancemarshall.lovable.app/" },
-    ],
+    links: [{ rel: "canonical", href: `${SITE_URL}/` }],
     scripts: [
       {
         type: "application/ld+json",
@@ -27,10 +35,10 @@ export const Route = createFileRoute("/")({
           "@context": "https://schema.org",
           "@type": "LocalBusiness",
           name: "Maintenance Marshall (Pty) Ltd",
-          image: "https://maintenancemarshall.lovable.app/favicon.ico",
+          image: `${SITE_URL}/assets/logo-BMmUvPyL.png`,
           telephone: "+27767816550",
-          email: "info@maintenancemarshall.co.za",
-          url: "https://maintenancemarshall.lovable.app/",
+          email: "quotes@maintenancemarshall.co.za",
+          url: `${SITE_URL}/`,
           address: {
             "@type": "PostalAddress",
             addressLocality: "Kempton Park",
