@@ -67,6 +67,31 @@ export const Route = createFileRoute("/locations/$locationSlug")({
       })),
     };
 
+    const breadcrumbSchema = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: SITE_URL,
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Locations",
+          item: `${SITE_URL}/locations`,
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: `Property Maintenance in ${location.name}`,
+          item: canonical,
+        },
+      ],
+    };
+
     return {
       meta: [
         { title: location.metaTitle },
@@ -87,6 +112,10 @@ export const Route = createFileRoute("/locations/$locationSlug")({
         {
           type: "application/ld+json",
           children: JSON.stringify(faqSchema),
+        },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(breadcrumbSchema),
         },
       ],
     };
