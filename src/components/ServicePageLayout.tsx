@@ -3,6 +3,7 @@ import { ArrowLeft, CheckCircle2, MapPin, MessageCircle, Phone } from "lucide-re
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
+import { locationPages } from "@/content/locations";
 import { servicePages, type ServicePage } from "@/content/services";
 
 const trustPoints = [
@@ -12,16 +13,18 @@ const trustPoints = [
   "Residential and commercial maintenance support",
 ];
 
-const serviceAreas = [
-  "Kempton Park",
-  "Johannesburg",
-  "Pretoria",
-  "Centurion",
-  "Midrand",
-  "Sandton",
-  "Roodepoort",
-  "Boksburg",
-];
+const linkedServiceAreas = locationPages.filter((location) =>
+  [
+    "kempton-park",
+    "johannesburg",
+    "pretoria",
+    "centurion",
+    "midrand",
+    "sandton",
+    "roodepoort",
+    "boksburg",
+  ].includes(location.slug),
+);
 
 function buildWhatsAppLink(service: ServicePage) {
   const message = `Hi Maintenance Marshall, I need help with ${service.title}.`;
@@ -165,10 +168,16 @@ export function ServicePageLayout({ service }: { service: ServicePage }) {
                 </Button>
               </div>
               <div className="mt-6 flex flex-wrap gap-2">
-                {serviceAreas.map((area) => (
-                  <span key={area} className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">
-                    {area}
-                  </span>
+                {linkedServiceAreas.map((area) => (
+                  <Link
+                    key={area.slug}
+                    to="/locations/$locationSlug"
+                    params={{ locationSlug: area.slug }}
+                    className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+                    aria-label={`View Maintenance Marshall services in ${area.name}`}
+                  >
+                    {area.name}
+                  </Link>
                 ))}
               </div>
             </div>
