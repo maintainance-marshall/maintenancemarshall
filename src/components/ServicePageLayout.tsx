@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft, CheckCircle2, Phone } from "lucide-react";
+import { ArrowLeft, CheckCircle2, MapPin, MessageCircle, Phone } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -12,11 +12,49 @@ const trustPoints = [
   "Residential and commercial maintenance support",
 ];
 
+const serviceAreas = [
+  "Kempton Park",
+  "Johannesburg",
+  "Pretoria",
+  "Centurion",
+  "Midrand",
+  "Sandton",
+  "Roodepoort",
+  "Boksburg",
+];
+
+function buildWhatsAppLink(service: ServicePage) {
+  const message = `Hi Maintenance Marshall, I need help with ${service.title}.`;
+  return `https://wa.me/27767816550?text=${encodeURIComponent(message)}`;
+}
+
+function getRelatedServices(service: ServicePage) {
+  const serviceWords = new Set(
+    [...service.services, ...service.commonProblems, service.title]
+      .join(" ")
+      .toLowerCase()
+      .split(/[^a-z0-9]+/)
+      .filter((word) => word.length > 4),
+  );
+
+  return servicePages
+    .filter((item) => item.slug !== service.slug)
+    .map((item) => {
+      const candidateText = [item.title, item.metaDescription, ...item.services, ...item.commonProblems]
+        .join(" ")
+        .toLowerCase();
+      const score = [...serviceWords].filter((word) => candidateText.includes(word)).length;
+      return { item, score };
+    })
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 4)
+    .map(({ item }) => item);
+}
+
 export function ServicePageLayout({ service }: { service: ServicePage }) {
   const serviceHighlights = service.services.slice(0, 4);
-  const relatedServices = servicePages
-    .filter((item) => item.slug !== service.slug)
-    .slice(0, 4);
+  const relatedServices = getRelatedServices(service);
+  const whatsappLink = buildWhatsAppLink(service);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -24,6 +62,18 @@ export function ServicePageLayout({ service }: { service: ServicePage }) {
       <main>
         <section className="pt-32 pb-20 bg-secondary">
           <div className="max-w-7xl mx-auto px-6">
+            <nav aria-label="Breadcrumb" className="mb-8 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+              <Link to="/" className="hover:text-primary transition-colors">
+                Home
+              </Link>
+              <span>/</span>
+              <Link to="/services" className="hover:text-primary transition-colors">
+                Services
+              </Link>
+              <span>/</span>
+              <span className="text-foreground">{service.shortTitle}</span>
+            </nav>
+
             <Link
               to="/services"
               className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-8"
@@ -46,6 +96,12 @@ export function ServicePageLayout({ service }: { service: ServicePage }) {
                   <a href="tel:+27767816550" aria-label="Call Maintenance Marshall on 076 781 6550">
                     <Phone className="w-4 h-4" />
                     Call 076 781 6550
+                  </a>
+                </Button>
+                <Button variant="outline" size="lg" asChild>
+                  <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
+                    <MessageCircle className="w-4 h-4" />
+                    WhatsApp Us
                   </a>
                 </Button>
                 <Button variant="outline" size="lg" asChild>
@@ -83,6 +139,39 @@ export function ServicePageLayout({ service }: { service: ServicePage }) {
                 ))}
               </ul>
             </aside>
+          </div>
+        </section>
+
+        <section className="py-16 bg-secondary">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="rounded-xl border border-border bg-card p-6 md:p-8">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                <div>
+                  <div className="flex items-center gap-2 text-primary font-semibold text-sm uppercase tracking-[0.2em]">
+                    <MapPin className="w-4 h-4" />
+                    Service Areas
+                  </div>
+                  <h2 className="text-2xl md:text-3xl font-bold text-foreground mt-3">
+                    {service.shortTitle} support across Gauteng
+                  </h2>
+                  <p className="text-muted-foreground mt-3 max-w-3xl leading-relaxed">
+                    Maintenance Marshall assists residential, commercial and rental properties across key Gauteng areas.
+                  </p>
+                </div>
+                <Button variant="hero" size="lg" asChild>
+                  <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
+                    Send Job Details
+                  </a>
+                </Button>
+              </div>
+              <div className="mt-6 flex flex-wrap gap-2">
+                {serviceAreas.map((area) => (
+                  <span key={area} className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">
+                    {area}
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
 
@@ -194,9 +283,16 @@ export function ServicePageLayout({ service }: { service: ServicePage }) {
                   ))}
                 </div>
               </div>
-              <Button variant="hero" size="lg" asChild>
-                <a href="mailto:quotes@maintenancemarshall.co.za">Request a Quote</a>
-              </Button>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button variant="hero" size="lg" asChild>
+                  <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
+                    WhatsApp Details
+                  </a>
+                </Button>
+                <Button variant="outline" size="lg" asChild>
+                  <a href="mailto:quotes@maintenancemarshall.co.za">Request a Quote</a>
+                </Button>
+              </div>
             </div>
           </div>
         </section>
