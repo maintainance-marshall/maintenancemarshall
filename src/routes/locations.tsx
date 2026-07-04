@@ -6,28 +6,98 @@ import { ContactSection } from "@/components/ContactSection";
 import { locationPages } from "@/content/locations";
 
 const SITE_URL = "https://www.maintenancemarshall.co.za";
+const LOCATION_NAMES = locationPages.map((location) => location.name).join(", ");
 
 export const Route = createFileRoute("/locations")({
   component: LocationsOverview,
-  head: () => ({
-    meta: [
-      { title: "Property Maintenance Service Areas Gauteng | Maintenance Marshall" },
-      {
-        name: "description",
-        content:
-          "Maintenance Marshall provides property maintenance services across Gauteng, including Johannesburg, Pretoria, Centurion, Midrand, Kempton Park, Randburg, Roodepoort and Boksburg.",
+  head: () => {
+    const canonical = `${SITE_URL}/locations`;
+    const title = "Property Maintenance Service Areas Gauteng | Maintenance Marshall";
+    const description = `Maintenance Marshall provides property maintenance services across Gauteng, including ${LOCATION_NAMES}.`;
+
+    const collectionSchema = {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      name: "Property Maintenance Service Areas in Gauteng",
+      description,
+      url: canonical,
+      mainEntity: {
+        "@type": "ItemList",
+        itemListElement: locationPages.map((location, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          name: `Property Maintenance in ${location.name}`,
+          description: location.metaDescription,
+          url: `${SITE_URL}/locations/${location.slug}`,
+        })),
       },
-      { property: "og:title", content: "Property Maintenance Service Areas Gauteng | Maintenance Marshall" },
-      {
-        property: "og:description",
-        content:
-          "View Maintenance Marshall service areas for multi-skilled property maintenance across Gauteng homes, offices, shops, landlords and commercial properties.",
+      provider: {
+        "@type": "LocalBusiness",
+        name: "Maintenance Marshall (Pty) Ltd",
+        url: SITE_URL,
+        telephone: "+27767816550",
+        email: "quotes@maintenancemarshall.co.za",
+        areaServed: {
+          "@type": "AdministrativeArea",
+          name: "Gauteng",
+        },
       },
-      { property: "og:type", content: "website" },
-      { property: "og:url", content: `${SITE_URL}/locations` },
-    ],
-    links: [{ rel: "canonical", href: `${SITE_URL}/locations` }],
-  }),
+    };
+
+    const breadcrumbSchema = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: SITE_URL,
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Locations",
+          item: canonical,
+        },
+      ],
+    };
+
+    return {
+      meta: [
+        { title },
+        {
+          name: "description",
+          content: description,
+        },
+        { property: "og:title", content: title },
+        {
+          property: "og:description",
+          content:
+            "View Maintenance Marshall service areas for multi-skilled property maintenance across Gauteng homes, offices, shops, landlords and commercial properties.",
+        },
+        { property: "og:type", content: "website" },
+        { property: "og:url", content: canonical },
+        { name: "twitter:title", content: title },
+        {
+          name: "twitter:description",
+          content:
+            "View Maintenance Marshall service areas for multi-skilled property maintenance across Gauteng homes, offices, shops, landlords and commercial properties.",
+        },
+      ],
+      links: [{ rel: "canonical", href: canonical }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(collectionSchema),
+        },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(breadcrumbSchema),
+        },
+      ],
+    };
+  },
 });
 
 function LocationsOverview() {
