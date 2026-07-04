@@ -233,6 +233,114 @@ export const locationPages: LocationPage[] = [
       },
     ],
   },
+  {
+    slug: "benoni",
+    name: "Benoni",
+    region: "Gauteng",
+    metaTitle: "Property Maintenance Benoni | Maintenance Marshall",
+    metaDescription:
+      "Benoni property maintenance for homes, landlords, offices, shops and commercial properties. Plumbing, ceilings, painting, waterproofing, roofs and general repairs.",
+    heroDescription:
+      "Multi-trade maintenance support for Benoni homes, rental properties, offices and commercial sites.",
+    overview:
+      "Maintenance Marshall assists Benoni clients with practical repairs, maintenance planning and connected trade work. We help property owners and businesses group related repairs into a clear scope so the work can be completed in the right sequence.",
+    propertyTypes: ["Homes", "Rental properties", "Offices", "Retail properties", "Commercial sites"],
+    priorityServices: coreServices,
+    nearbyAreas: ["Boksburg", "Kempton Park", "Edenvale", "Germiston", "Johannesburg"],
+    faqs: [
+      {
+        question: "Do you provide property maintenance services in Benoni?",
+        answer:
+          "Yes. Maintenance Marshall assists Benoni clients with general property maintenance, repairs, restoration and related trade work.",
+      },
+      {
+        question: "Can you help Benoni landlords with grouped repairs?",
+        answer:
+          "Yes. We can group repairs such as plumbing, ceilings, waterproofing and painting into a clear work sequence for rental and managed properties.",
+      },
+    ],
+  },
+  {
+    slug: "edenvale",
+    name: "Edenvale",
+    region: "Gauteng",
+    metaTitle: "Property Maintenance Edenvale | Maintenance Marshall",
+    metaDescription:
+      "Edenvale property maintenance services for homes, complexes, landlords and businesses. General repairs, ceilings, plumbing, painting, waterproofing and roof maintenance.",
+    heroDescription:
+      "Reliable maintenance support for Edenvale homes, complexes, landlords and businesses.",
+    overview:
+      "Maintenance Marshall supports Edenvale property owners, tenants, landlords and businesses with practical maintenance work. We focus on clear communication, neat workmanship and solving connected maintenance issues properly.",
+    propertyTypes: ["Homes", "Complex units", "Rental properties", "Offices", "Small businesses"],
+    priorityServices: coreServices,
+    nearbyAreas: ["Kempton Park", "Bedfordview", "Boksburg", "Benoni", "Johannesburg"],
+    faqs: [
+      {
+        question: "Do you handle maintenance work in Edenvale complexes?",
+        answer:
+          "Yes. We assist homes, complexes, landlords and small businesses with maintenance work in Edenvale and nearby areas.",
+      },
+      {
+        question: "Can you combine repairs and finishing work in Edenvale?",
+        answer:
+          "Yes. Where required, we can combine the main repair with related preparation, painting and finishing work.",
+      },
+    ],
+  },
+  {
+    slug: "germiston",
+    name: "Germiston",
+    region: "Gauteng",
+    metaTitle: "Property Maintenance Germiston | Maintenance Marshall",
+    metaDescription:
+      "Germiston property maintenance for homes, factories, warehouses, offices and rental properties. General repairs, ceilings, plumbing, waterproofing, painting and roofs.",
+    heroDescription:
+      "Property maintenance and repair support for Germiston residential, rental and commercial properties.",
+    overview:
+      "Maintenance Marshall assists Germiston clients with practical multi-trade maintenance, including repairs that often affect more than one area of a property. We help structure the scope clearly so maintenance work is easier to approve and complete.",
+    propertyTypes: ["Homes", "Rental properties", "Factories", "Warehouses", "Offices and shops"],
+    priorityServices: coreServices,
+    nearbyAreas: ["Boksburg", "Edenvale", "Benoni", "Johannesburg", "Kempton Park"],
+    faqs: [
+      {
+        question: "Do you assist commercial properties in Germiston?",
+        answer:
+          "Yes. Maintenance Marshall assists residential and commercial clients, including offices, shops, warehouses and managed properties.",
+      },
+      {
+        question: "Can Germiston maintenance work include several trades?",
+        answer:
+          "Yes. We can assist with connected tasks such as plumbing repairs, ceiling work, waterproofing, painting and general restoration.",
+      },
+    ],
+  },
+  {
+    slug: "sandton",
+    name: "Sandton",
+    region: "Gauteng",
+    metaTitle: "Property Maintenance Sandton | Maintenance Marshall",
+    metaDescription:
+      "Sandton property maintenance services for homes, apartments, offices, shops and landlords. Ceilings, plumbing, waterproofing, painting, roof repairs and general maintenance.",
+    heroDescription:
+      "Professional property maintenance support for Sandton homes, apartments, offices, shops and landlords.",
+    overview:
+      "Maintenance Marshall assists Sandton clients with neat, practical maintenance work for residential, rental and commercial properties. We help handle related repair items in sequence so the final result is cleaner and more reliable.",
+    propertyTypes: ["Apartments", "Homes", "Rental properties", "Offices", "Retail spaces"],
+    priorityServices: coreServices,
+    nearbyAreas: ["Randburg", "Midrand", "Johannesburg", "Roodepoort", "Centurion"],
+    faqs: [
+      {
+        question: "Do you provide property maintenance services in Sandton?",
+        answer:
+          "Yes. Maintenance Marshall provides practical maintenance and repair support for Sandton residential and commercial properties.",
+      },
+      {
+        question: "Can you help Sandton offices and landlords with maintenance scopes?",
+        answer:
+          "Yes. We can help group maintenance items into a clear scope for offices, rental units, shops and managed properties.",
+      },
+    ],
+  },
 ];
 
 export function getLocationPage(slug: string | undefined) {
