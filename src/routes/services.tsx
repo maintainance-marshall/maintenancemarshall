@@ -1,11 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, MessageCircle, Phone } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { ContactSection } from "@/components/ContactSection";
+import { Button } from "@/components/ui/button";
 import { servicePages } from "@/content/services";
 
 const SITE_URL = "https://www.maintenancemarshall.co.za";
+const WHATSAPP_LINK = `https://wa.me/27767816550?text=${encodeURIComponent(
+  "Hi Maintenance Marshall, I need help with property maintenance services.",
+)}`;
 
 export const Route = createFileRoute("/services")({
   component: ServicesOverview,
@@ -41,6 +45,25 @@ export const Route = createFileRoute("/services")({
       },
     };
 
+    const breadcrumbSchema = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: SITE_URL,
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Services",
+          item: canonical,
+        },
+      ],
+    };
+
     return {
       meta: [
         { title: "Property Maintenance Services Gauteng | Maintenance Marshall" },
@@ -70,6 +93,10 @@ export const Route = createFileRoute("/services")({
           type: "application/ld+json",
           children: JSON.stringify(collectionSchema),
         },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(breadcrumbSchema),
+        },
       ],
     };
   },
@@ -82,6 +109,13 @@ function ServicesOverview() {
       <main>
         <section className="pt-32 pb-16 bg-secondary border-b border-border">
           <div className="max-w-6xl mx-auto px-6">
+            <nav aria-label="Breadcrumb" className="mb-8 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+              <Link to="/" className="hover:text-primary transition-colors">
+                Home
+              </Link>
+              <span>/</span>
+              <span className="text-foreground">Services</span>
+            </nav>
             <p className="text-xs uppercase tracking-[0.3em] text-primary font-semibold mb-4">
               Maintenance Services Gauteng
             </p>
@@ -90,6 +124,20 @@ function ServicesOverview() {
               Maintenance Marshall provides practical, multi-skilled property maintenance services for homes,
               landlords, offices, shops, body corporates and commercial properties across Gauteng.
             </p>
+            <div className="mt-8 flex flex-col sm:flex-row gap-4">
+              <Button variant="hero" size="lg" asChild>
+                <a href="tel:+27767816550" aria-label="Call Maintenance Marshall on 076 781 6550">
+                  <Phone className="w-4 h-4" />
+                  Call 076 781 6550
+                </a>
+              </Button>
+              <Button variant="outline" size="lg" asChild>
+                <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer">
+                  <MessageCircle className="w-4 h-4" />
+                  WhatsApp Job Details
+                </a>
+              </Button>
+            </div>
           </div>
         </section>
 
@@ -114,6 +162,7 @@ function ServicesOverview() {
                   to="/services/$serviceSlug"
                   params={{ serviceSlug: service.slug }}
                   className="text-primary text-sm font-semibold inline-flex items-center gap-2 mt-auto"
+                  aria-label={`View ${service.title} service details`}
                 >
                   View service
                   <ArrowRight className="w-4 h-4" />
