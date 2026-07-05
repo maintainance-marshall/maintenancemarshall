@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Phone, Mail, MapPin, ArrowRight, Loader2, CheckCircle2, Upload, X } from "lucide-react";
+import { Phone, Mail, MapPin, ArrowRight, Loader2, CheckCircle2, Upload, X, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { submitContactForm } from "@/lib/contact.functions";
@@ -20,6 +20,22 @@ const inputClass =
 const labelClass =
   "text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2 block";
 
+const WHATSAPP_NUMBER = "27767816550";
+
+type QuoteFormData = {
+  name: string;
+  phone: string;
+  email: string;
+  service: string;
+  jobType: string;
+  multipleServices: string[];
+  otherService: string;
+  propertyAddress: string;
+  description: string;
+  preferredContact: string;
+  urgency: string;
+};
+
 function fileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -32,25 +48,66 @@ function fileToBase64(file: File): Promise<string> {
   });
 }
 
+function createReferenceNumber() {
+  const now = new Date();
+  const date = now.toISOString().slice(0, 10).replace(/-/g, "");
+  const suffix = Math.floor(1000 + Math.random() * 9000);
+  return `MM-${date}-${suffix}`;
+}
+
+function getServiceSummary(data: QuoteFormData) {
+  if (data.service === "Multiple Services Required" && data.multipleServices.length > 0) {
+    return `${data.service}: ${data.multipleServices.join(", ")}`;
+  }
+
+  if (data.service === "Other (Please Describe)" && data.otherService.trim()) {
+    return `${data.service}: ${data.otherService.trim()}`;
+  }
+
+  return data.jobType ? `${data.service} - ${data.jobType}` : data.service;
+}
+
+function buildWhatsAppUrl(data: QuoteFormData, reference: string) {
+  const message = [
+    "New Quote Request",
+    "",
+    `Reference: ${reference}`,
+    `Name: ${data.name}`,
+    `Phone: ${data.phone}`,
+    `Email: ${data.email}`,
+    `Service Required: ${getServiceSummary(data)}`,
+    `Property Address: ${data.propertyAddress}`,
+    `Description: ${data.description}`,
+    `Preferred Contact Method: ${data.preferredContact}`,
+    `Urgency: ${data.urgency}`,
+  ].join("\n");
+
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+}
+
+const emptyFormData: QuoteFormData = {
+  name: "",
+  phone: "",
+  email: "",
+  service: "",
+  jobType: "",
+  multipleServices: [],
+  otherService: "",
+  propertyAddress: "",
+  description: "",
+  preferredContact: "",
+  urgency: "",
+};
+
 export function ContactSection() {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
   const [website, setWebsite] = useState(""); // honeypot — must stay empty
   const [mountedAt] = useState<number>(() => Date.now());
-  const [formData, setFormData] = useState({
-    name: "",
-    phone: "",
-    email: "",
-    service: "",
-    jobType: "",
-    multipleServices: [] as string[],
-    otherService: "",
-    propertyAddress: "",
-    description: "",
-    preferredContact: "",
-    urgency: "",
-  });
+  const [quoteReference, setQuoteReference] = useState("");
+  const [submittedData, setSubmittedData] = useState<QuoteFormData | null>(null);
+  const [formData, setFormData] = useState<QuoteFormData>(emptyFormData);
 
   const set = <K extends keyof typeof formData>(key: K, value: (typeof formData)[K]) =>
     setFormData((p) => ({ ...p, [key]: value }));
@@ -59,6 +116,7 @@ export function ContactSection() {
   const showJobType = jobTypeOptions.length > 0;
   const showMultiple = formData.service === "Multiple Services Required";
   const showOther = formData.service === "Other (Please Describe)";
+  const whatsAppUrl = submittedData && quoteReference ? buildWhatsAppUrl(submittedData, quoteReference) : "";
 
   const handleFiles = (selected: FileList | null) => {
     if (!selected) return;
@@ -135,6 +193,8 @@ export function ContactSection() {
 
     setLoading(true);
     try {
+      const reference = createReferenceNumber();
+      const submittedSnapshot = { ...formData };
       const encoded = await Promise.all(
         files.map(async (f) => ({
           name: f.name,
@@ -143,13 +203,11 @@ export function ContactSection() {
         })),
       );
       await submitContactForm({
-        data: { ...formData, files: encoded, website, elapsedMs },
+        data: { ...submittedSnapshot, files: encoded, website, elapsedMs, quoteReference: reference },
       });
-      setFormData({
-        name: "", phone: "", email: "", service: "", jobType: "",
-        multipleServices: [], otherService: "", propertyAddress: "",
-        description: "", preferredContact: "", urgency: "",
-      });
+      setSubmittedData(submittedSnapshot);
+      setQuoteReference(reference);
+      setFormData(emptyFormData);
       setFiles([]);
       setWebsite("");
       setSubmitted(true);
@@ -197,13 +255,39 @@ export function ContactSection() {
               <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-5">
                 <CheckCircle2 className="w-8 h-8 text-primary" />
               </div>
-              <h3 className="text-2xl font-bold text-foreground mb-3">Request Received</h3>
-              <p className="text-muted-foreground leading-relaxed mb-6 max-w-md">
-                Thank you for contacting Maintenance Marshall. Your quote request has been received and a confirmation email is on its way. Our team will be in touch shortly.
+              <h3 className="text-2xl font-bold text-foreground mb-3">Quote Request Submitted Successfully</h3>
+              <p className="text-muted-foreground leading-relaxed mb-4 max-w-md">
+                Thank you. Your quote request has been sent successfully and our team has received it by email.
               </p>
-              <Button variant="heroOutline" size="lg" onClick={() => { setSubmitted(false); window.scrollTo({ top: 0, behavior: "smooth" }); }}>
-                Back to Home
-              </Button>
+              {quoteReference && (
+                <div className="bg-secondary border border-border rounded-lg px-4 py-3 mb-5 w-full max-w-md">
+                  <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1">Reference Number</p>
+                  <p className="text-lg font-bold text-primary">{quoteReference}</p>
+                </div>
+              )}
+              <div className="text-left bg-background/50 border border-border rounded-lg p-4 mb-6 w-full max-w-md space-y-3">
+                <div>
+                  <p className="text-sm font-semibold text-foreground">Email</p>
+                  <p className="text-sm text-muted-foreground">Your request has already been delivered to Maintenance Marshall. No further action is required.</p>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-foreground">WhatsApp Optional</p>
+                  <p className="text-sm text-muted-foreground">Tap the button below to open WhatsApp. All of your quote request details will be filled in automatically, so you only need to press Send.</p>
+                </div>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
+                {whatsAppUrl && (
+                  <Button variant="hero" size="lg" asChild className="flex-1">
+                    <a href={whatsAppUrl} target="_blank" rel="noopener noreferrer">
+                      <MessageCircle className="w-4 h-4" />
+                      Continue on WhatsApp
+                    </a>
+                  </Button>
+                )}
+                <Button variant="heroOutline" size="lg" className="flex-1" onClick={() => { setSubmitted(false); window.scrollTo({ top: 0, behavior: "smooth" }); }}>
+                  Back to Home
+                </Button>
+              </div>
             </motion.div>
           ) : (
             <motion.form initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="space-y-5" onSubmit={handleSubmit}>
