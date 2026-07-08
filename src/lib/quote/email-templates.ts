@@ -1,0 +1,228 @@
+export type QuoteEmailData = {
+  name: string;
+  phone: string;
+  email: string;
+  service: string;
+  jobType: string;
+  multipleServices: string[];
+  otherService: string;
+  propertyAddress: string;
+  description: string;
+  preferredContact: string;
+  urgency: string;
+  reference: string;
+  submittedAt: string;
+  attachmentSummary: string;
+};
+
+export type QuoteEmailPackage = {
+  adminSubject: string;
+  adminText: string;
+  adminHtml: string;
+  customerSubject: string;
+  customerText: string;
+  customerHtml: string;
+};
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function nl2br(value: string) {
+  return escapeHtml(value).replace(/\n/g, "<br />");
+}
+
+function detailRow(label: string, value: string) {
+  return `
+    <tr>
+      <td style="padding:10px 12px;border-bottom:1px solid #e5e7eb;color:#6b7280;font-size:13px;width:34%;vertical-align:top;">${escapeHtml(label)}</td>
+      <td style="padding:10px 12px;border-bottom:1px solid #e5e7eb;color:#111827;font-size:14px;font-weight:600;vertical-align:top;">${nl2br(value || "Not provided")}</td>
+    </tr>`;
+}
+
+function emailShell(title: string, preheader: string, body: string) {
+  return `<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>${escapeHtml(title)}</title>
+  </head>
+  <body style="margin:0;padding:0;background:#f3f4f6;font-family:Arial,Helvetica,sans-serif;color:#111827;">
+    <span style="display:none!important;visibility:hidden;opacity:0;color:transparent;height:0;width:0;overflow:hidden;">${escapeHtml(preheader)}</span>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f3f4f6;padding:24px 12px;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:720px;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #e5e7eb;">
+            <tr>
+              <td style="background:#111827;color:#ffffff;padding:22px 26px;">
+                <div style="font-size:12px;letter-spacing:1.6px;text-transform:uppercase;color:#fbbf24;font-weight:700;">Maintenance Marshall</div>
+                <h1 style="margin:8px 0 0;font-size:24px;line-height:1.25;">${escapeHtml(title)}</h1>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:26px;">
+                ${body}
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:18px 26px;background:#f9fafb;border-top:1px solid #e5e7eb;color:#6b7280;font-size:12px;line-height:1.6;">
+                Maintenance Marshall (Pty) Ltd<br />
+                Precision is the Protocol.<br />
+                Website: www.maintenancemarshall.co.za | Phone: 076 781 6550
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`;
+}
+
+export function getServiceDisplay(data: Pick<QuoteEmailData, "service" | "jobType" | "multipleServices" | "otherService">) {
+  if (data.service === "Multiple Services Required" && data.multipleServices.length) {
+    return `${data.service} (${data.multipleServices.join(", ")})`;
+  }
+
+  if (data.service === "Other (Please Describe)" && data.otherService) {
+    return `${data.service}: ${data.otherService}`;
+  }
+
+  return data.service;
+}
+
+export function buildQuoteEmailPackage(data: QuoteEmailData): QuoteEmailPackage {
+  const serviceDisplay = getServiceDisplay(data);
+
+  const adminSubject = `New Quote Request ${data.reference} - ${data.name}`;
+  const adminText = [
+    "==================================================",
+    "NEW WEBSITE QUOTE REQUEST",
+    "==================================================",
+    "",
+    `Reference Number: ${data.reference}`,
+    `Submitted: ${data.submittedAt}`,
+    "",
+    "CLIENT DETAILS",
+    "--------------------------------------------------",
+    `Full Name: ${data.name}`,
+    `Phone Number: ${data.phone}`,
+    `Email Address: ${data.email}`,
+    `Preferred Contact Method: ${data.preferredContact}`,
+    "",
+    "JOB DETAILS",
+    "--------------------------------------------------",
+    `Service Required: ${serviceDisplay}`,
+    data.jobType ? `Job Type: ${data.jobType}` : null,
+    `Urgency: ${data.urgency}`,
+    "",
+    "PROPERTY ADDRESS",
+    "--------------------------------------------------",
+    data.propertyAddress,
+    "",
+    "DESCRIPTION OF WORK",
+    "--------------------------------------------------",
+    data.description,
+    "",
+    "UPLOADED IMAGES / DOCUMENTS",
+    "--------------------------------------------------",
+    data.attachmentSummary,
+    "",
+    "NEXT STEP",
+    "--------------------------------------------------",
+    "Contact the client, confirm requirements, and prepare the quote/site inspection plan.",
+  ].filter(Boolean).join("\n");
+
+  const adminHtml = emailShell(
+    `New Quote Request ${data.reference}`,
+    `New website quote request from ${data.name}`,
+    `
+      <p style="margin:0 0 18px;color:#374151;font-size:15px;line-height:1.6;">A new quote request was submitted through the Maintenance Marshall website.</p>
+      <div style="background:#fffbeb;border:1px solid #fbbf24;border-radius:10px;padding:14px 16px;margin-bottom:20px;">
+        <div style="font-size:12px;text-transform:uppercase;letter-spacing:1.4px;color:#92400e;font-weight:700;">Reference Number</div>
+        <div style="font-size:22px;color:#111827;font-weight:800;margin-top:4px;">${escapeHtml(data.reference)}</div>
+      </div>
+      <h2 style="font-size:16px;margin:22px 0 8px;color:#111827;">Client Details</h2>
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;border-collapse:separate;">
+        ${detailRow("Full Name", data.name)}
+        ${detailRow("Phone Number", data.phone)}
+        ${detailRow("Email Address", data.email)}
+        ${detailRow("Preferred Contact", data.preferredContact)}
+      </table>
+      <h2 style="font-size:16px;margin:22px 0 8px;color:#111827;">Job Details</h2>
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;border-collapse:separate;">
+        ${detailRow("Service Required", serviceDisplay)}
+        ${data.jobType ? detailRow("Job Type", data.jobType) : ""}
+        ${detailRow("Urgency", data.urgency)}
+        ${detailRow("Property Address", data.propertyAddress)}
+        ${detailRow("Description of Work", data.description)}
+        ${detailRow("Uploaded Files", data.attachmentSummary)}
+        ${detailRow("Submitted", data.submittedAt)}
+      </table>
+      <div style="margin-top:22px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:14px 16px;color:#374151;font-size:14px;line-height:1.6;">
+        <strong>Next Step:</strong> Contact the client, confirm requirements, and prepare the quote/site inspection plan.
+      </div>`
+  );
+
+  const customerSubject = `Quote Request Received ${data.reference} - Maintenance Marshall`;
+  const customerText = [
+    `Hi ${data.name},`,
+    "",
+    "Thank you for contacting Maintenance Marshall.",
+    "",
+    "We have received your quote request successfully and our team will review the details.",
+    "",
+    `Reference Number: ${data.reference}`,
+    "",
+    "YOUR REQUEST SUMMARY",
+    "--------------------------------------------------",
+    `Service: ${serviceDisplay}`,
+    data.jobType ? `Job Type: ${data.jobType}` : null,
+    `Urgency: ${data.urgency}`,
+    `Preferred Contact: ${data.preferredContact}`,
+    `Property Address: ${data.propertyAddress}`,
+    "",
+    "WHAT HAPPENS NEXT",
+    "--------------------------------------------------",
+    "Our team will contact you to confirm the details and advise on the next step.",
+    "For urgent requests, please call us directly.",
+    "",
+    "Contact Number: 076 781 6550",
+    "Website: www.maintenancemarshall.co.za",
+    "",
+    "Kind regards,",
+    "Maintenance Marshall Team",
+  ].filter(Boolean).join("\n");
+
+  const customerHtml = emailShell(
+    "Quote Request Received",
+    `Your quote request ${data.reference} was received by Maintenance Marshall.`,
+    `
+      <p style="margin:0 0 14px;color:#374151;font-size:15px;line-height:1.6;">Hi ${escapeHtml(data.name)},</p>
+      <p style="margin:0 0 18px;color:#374151;font-size:15px;line-height:1.6;">Thank you for contacting Maintenance Marshall. We have received your quote request successfully and our team will review the details.</p>
+      <div style="background:#fffbeb;border:1px solid #fbbf24;border-radius:10px;padding:14px 16px;margin-bottom:20px;">
+        <div style="font-size:12px;text-transform:uppercase;letter-spacing:1.4px;color:#92400e;font-weight:700;">Reference Number</div>
+        <div style="font-size:22px;color:#111827;font-weight:800;margin-top:4px;">${escapeHtml(data.reference)}</div>
+      </div>
+      <h2 style="font-size:16px;margin:22px 0 8px;color:#111827;">Request Summary</h2>
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;border-collapse:separate;">
+        ${detailRow("Service", serviceDisplay)}
+        ${data.jobType ? detailRow("Job Type", data.jobType) : ""}
+        ${detailRow("Urgency", data.urgency)}
+        ${detailRow("Preferred Contact", data.preferredContact)}
+        ${detailRow("Property Address", data.propertyAddress)}
+      </table>
+      <div style="margin-top:22px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:14px 16px;color:#374151;font-size:14px;line-height:1.6;">
+        <strong>What happens next:</strong><br />
+        Our team will contact you to confirm the details and advise on the next step. For urgent requests, please call 076 781 6550.
+      </div>`
+  );
+
+  return { adminSubject, adminText, adminHtml, customerSubject, customerText, customerHtml };
+}
