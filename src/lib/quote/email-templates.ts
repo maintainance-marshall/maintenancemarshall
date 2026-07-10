@@ -37,11 +37,37 @@ function nl2br(value: string) {
   return escapeHtml(value).replace(/\n/g, "<br />");
 }
 
+function toSouthAfricanInternationalNumber(phone: string) {
+  const digits = phone.replace(/\D/g, "");
+
+  if (digits.startsWith("27")) return digits;
+  if (digits.startsWith("0") && digits.length >= 10) return `27${digits.slice(1)}`;
+  if (digits.length === 9) return `27${digits}`;
+
+  return digits;
+}
+
+function buildClientChatUrl(phone: string, reference: string) {
+  const number = toSouthAfricanInternationalNumber(phone);
+  const message = `Hi, we received your quote request ${reference} from Maintenance Marshall. We would like to confirm a few details.`;
+  return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
+}
+
 function detailRow(label: string, value: string) {
   return `
     <tr>
       <td style="padding:10px 12px;border-bottom:1px solid #e5e7eb;color:#6b7280;font-size:13px;width:34%;vertical-align:top;">${escapeHtml(label)}</td>
       <td style="padding:10px 12px;border-bottom:1px solid #e5e7eb;color:#111827;font-size:14px;font-weight:600;vertical-align:top;">${nl2br(value || "Not provided")}</td>
+    </tr>`;
+}
+
+function clickableRow(label: string, value: string, href: string) {
+  return `
+    <tr>
+      <td style="padding:10px 12px;border-bottom:1px solid #e5e7eb;color:#6b7280;font-size:13px;width:34%;vertical-align:top;">${escapeHtml(label)}</td>
+      <td style="padding:10px 12px;border-bottom:1px solid #e5e7eb;color:#111827;font-size:14px;font-weight:600;vertical-align:top;">
+        <a href="${escapeHtml(href)}" style="color:#0f766e;text-decoration:none;font-weight:700;">${escapeHtml(value || "Open chat")}</a>
+      </td>
     </tr>`;
 }
 
@@ -99,6 +125,7 @@ export function getServiceDisplay(data: Pick<QuoteEmailData, "service" | "jobTyp
 
 export function buildQuoteEmailPackage(data: QuoteEmailData): QuoteEmailPackage {
   const serviceDisplay = getServiceDisplay(data);
+  const clientChatUrl = buildClientChatUrl(data.phone, data.reference);
 
   const adminSubject = `New Quote Request ${data.reference} - ${data.name}`;
   const adminText = [
@@ -113,6 +140,7 @@ export function buildQuoteEmailPackage(data: QuoteEmailData): QuoteEmailPackage 
     "--------------------------------------------------",
     `Full Name: ${data.name}`,
     `Phone Number: ${data.phone}`,
+    `Chat Link: ${clientChatUrl}`,
     `Email Address: ${data.email}`,
     `Preferred Contact Method: ${data.preferredContact}`,
     "",
@@ -148,10 +176,13 @@ export function buildQuoteEmailPackage(data: QuoteEmailData): QuoteEmailPackage 
         <div style="font-size:12px;text-transform:uppercase;letter-spacing:1.4px;color:#92400e;font-weight:700;">Reference Number</div>
         <div style="font-size:22px;color:#111827;font-weight:800;margin-top:4px;">${escapeHtml(data.reference)}</div>
       </div>
+      <div style="margin-bottom:20px;">
+        <a href="${escapeHtml(clientChatUrl)}" style="display:inline-block;background:#16a34a;color:#ffffff;text-decoration:none;font-weight:700;border-radius:8px;padding:11px 16px;font-size:14px;">Message Client</a>
+      </div>
       <h2 style="font-size:16px;margin:22px 0 8px;color:#111827;">Client Details</h2>
       <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;border-collapse:separate;">
         ${detailRow("Full Name", data.name)}
-        ${detailRow("Phone Number", data.phone)}
+        ${clickableRow("Phone / Chat", data.phone, clientChatUrl)}
         ${detailRow("Email Address", data.email)}
         ${detailRow("Preferred Contact", data.preferredContact)}
       </table>
